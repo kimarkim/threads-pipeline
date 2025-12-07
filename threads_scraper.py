@@ -12,6 +12,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from bs4 import BeautifulSoup
 import numpy as np
+import pandas as pd
+import langdetect as detect
 
 
 class ThreadsScraper:
@@ -220,14 +222,14 @@ class ThreadsScraper:
 
         # Create individual post objects
         posts_data = []
-        for i, post_text in enumerate(final_data):
-            post_id = hashlib.sha256(f"{keyword}_{i}_{post_text}".encode('utf-8')).hexdigest()
+        for post_text in enumerate(final_data):
+            post_id = hashlib.sha256(f"{keyword}_{post_text}".encode('utf-8')).hexdigest()
             posts_data.append({
                 'id': post_id,
                 'genre': keyword,
                 'post': post_text,
                 'acquire_date': upload_date.strftime('%Y-%m-%d'),
-                'in_out': "out"
+                'target country': detect(keyword)
             })
 
         return posts_data

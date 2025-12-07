@@ -1,20 +1,22 @@
 import os
 import time
-import json
 from google.cloud import storage
 import datetime
 from google.api_core import exceptions
 from threads_scraper import ThreadsScraper
+from clean_data import Data_Cleanser
 from dotenv import load_dotenv
+import pandas as pd
 
 # Load environment variables from .env file
 load_dotenv()
 
+
 # --- Configuration ---
 USERNAME = os.environ.get('THREADS_USERNAME')
 PASSWORD = os.environ.get('THREADS_PASSWORD')
-TARGET_KEYWORD = ["韓国", "Kポ", "韓国旅行","韓国ファッション","韓国コスメ","韓国グルメ","韓国語","韓国留学","韓国生活"]
-TARGET_POSTS_NUM = 100
+TARGET_KEYWORD = ["일본", "韓国"]
+TARGET_POSTS_NUM = 1
 BUCKET_NAME = os.environ.get('BUCKET_NAME')
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.environ.get('GCP_CREDENTIALS')
@@ -25,9 +27,9 @@ def upload_file_gcs(storage_client, bucket_name, data, destination_file_name):
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(destination_file_name)
         
-        # Convert to JSON string (don't encode to bytes)
-        jsonl_data = "\n".join(json.dumps(post, ensure_ascii=False) for post in data)
-        blob.upload_from_string(jsonl_data, content_type='application/jsonl')
+        # Convert DF → CSV string
+        csv_str = data.to_csv(index=False)
+        blob.upload_from_string(csv_str, content_type='text/csv')
         print(f"Successfully uploaded to {destination_file_name}")
         return True
     except Exception as e:
@@ -64,9 +66,15 @@ def main():
 
                 print(f"Found {len(scraped_posts)} posts for '{keyword}'.")
 
+                cleanse = Data_Cleanser()
+                scraped_posts_df = pd.DataFrame(scraped_posts)
+
+                # Clean the DataFrame
+                scraped_posts = cleanse.clean_all(scraped_posts_df)
+
                 # Upload to GCS with properly formatted filename
                 scraped_date = datetime.datetime.now().strftime('%Y-%m-%d')
-                destination_file_name = f'jpn/threads_{keyword}_{scraped_date}.json'
+                destination_file_name = f'raw-data/{keyword}_{scraped_date}.csv'
 
                 success = upload_file_gcs(
                     storage_client, 

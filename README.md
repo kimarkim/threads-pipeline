@@ -1,7 +1,6 @@
-threads-pipeline: Meta Threads Scraping and Data Pipeline
-This repository contains a robust Python pipeline designed to scrape posts from Meta Threads, clean the collected data, and automatically upload the results to Google Cloud Storage (GCS) for further analysis.
+This repository contains a robust Python pipeline designed to scrape posts from Meta Threads, clean the collected data, and automatically upload the results to Google Cloud Storage (GCS) for further analysis.<br><br>
 
-**✨ Features**
+# ✨ Features
 
 
 Based on the codebase, this pipeline includes the following key capabilities:
@@ -22,11 +21,11 @@ Strip websites, URLs, and emojis.
 
 Language Detection: Attempts to identify the target country/language of the scraped content using langdetect.
 
-Cloud Integration: Seamlessly uploads the cleaned data as a CSV file to a designated Google Cloud Storage (GCS) bucket.
+Cloud Integration: Seamlessly uploads the cleaned data as a CSV file to a designated Google Cloud Storage (GCS) bucket.<br><br>
 
 
 
-**🛠️ Installation and Setup**
+# 🛠️ Installation and Setup
 
 
 **1. Prerequisites**
@@ -47,19 +46,19 @@ Create a file named .env and populate it with your credentials:
 
 Ini, TOML
 
-# Threads Credentials
+**Threads Credentials **
 THREADS_USERNAME="your_threads_username"
 THREADS_PASSWORD="your_threads_password"
 
-# Google Cloud Storage Configuration
+**Google Cloud Storage Configuration**
 BUCKET_NAME="your-gcs-bucket-name"
 
-# Path to your GCP Service Account Key file (JSON)
-# Ensure this file is accessible by the script.
-GCP_CREDENTIALS="/path/to/your/gcp-service-account-key.json"
+**Path to your GCP Service Account Key file (JSON)**
+**Ensure this file is accessible by the script.**
+GCP_CREDENTIALS="/path/to/your/gcp-service-account-key.json"<br><br>
 
 
-**🚀 Usage**
+# 🚀 Usage
 The pipeline is executed via the main.py file.
 
 Define Keywords: Modify the TARGET_KEYWORD list in main.py to set the terms you wish to scrape (e.g., TARGET_KEYWORD = ["your_term_1", "your_term_2"]).
@@ -80,7 +79,7 @@ The main function executes the following process for each configured keyword :
 
 **Clean:** Passes the raw data to the Data_Cleanser to remove noise and unwanted content.
 
-**Upload:** The resulting cleaned DataFrame is converted to a CSV string and uploaded to GCS under the path: raw-data/{keyword}_{YYYY-MM-DD}.csv.
+**Upload:** The resulting cleaned DataFrame is converted to a CSV string and uploaded to GCS under the path: raw-data/{keyword}_{YYYY-MM-DD}.csv.<br><br>
 
-**📄 License**
+# 📄 License
 This project is licensed under the Apache License, Version 2.0.

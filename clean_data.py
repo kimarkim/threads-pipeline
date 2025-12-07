@@ -49,6 +49,7 @@ class Data_Cleanser:
 
     return df
   
+  
   def clean_all(self, df):
     df = self.drop_duplicates(df)
     df = self.cleanse_data(df)

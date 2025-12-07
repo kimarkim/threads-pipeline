@@ -1,4 +1,4 @@
-# Meta Threads Scraper with Automated GCS Upload<br><br>
+# Meta Threads Scraper with Automated GCS Upload
 This repository contains a robust Python pipeline designed to scrape posts from Meta Threads, clean the collected data, and automatically upload the results to Google Cloud Storage (GCS) for further analysis.<br><br>
 
 # ✨ Features

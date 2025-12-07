@@ -3,7 +3,6 @@ import pandas as pd
 
 class Data_Cleanser:
   def __init__(self, min_length=5):
-    self.url_drop = re.compile(r'^[a-zA-Z0-9_@.]+$')
     self.website_drop = re.compile(r"http\S+|www\.\S+")
     self.at_drop = re.compile(r'^Replying to @.*')
     self.useless = re.compile(r'^[a-zA-Z0-9_@.]+$')
@@ -25,7 +24,7 @@ class Data_Cleanser:
 
     # drop duplicate posts
   def drop_duplicates(self, df):
-    return df.drop_duplicates(subsets=id)
+    return df.drop_duplicates(subset=["id"])
 
     # making data usable
   def cleanse_data(self, df):
@@ -41,9 +40,6 @@ class Data_Cleanser:
 
     # drop websites
     df["post"] = df["post"].str.replace(self.website_drop, "", regex=True)
-
-    # drop urls in posts
-    df["post"] = df["post"].str.replace(self.url_drop, "", regex=True)
 
     # Strip emojis
     df["post"] = df["post"].str.replace(self.emoji_pattern, "", regex=True)

@@ -7,6 +7,8 @@ from threads_scraper import ThreadsScraper
 from clean_data import Data_Cleanser
 from dotenv import load_dotenv
 import pandas as pd
+import pyarrow.parquet as pq
+import pyarrow as pa
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,7 +18,7 @@ load_dotenv()
 USERNAME = os.environ.get('THREADS_USERNAME')
 PASSWORD = os.environ.get('THREADS_PASSWORD')
 TARGET_KEYWORD = ["일본", "韓国"]
-TARGET_POSTS_NUM = 1
+TARGET_POSTS_NUM = 1000
 BUCKET_NAME = os.environ.get('BUCKET_NAME')
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.environ.get('GCP_CREDENTIALS')
@@ -27,9 +29,9 @@ def upload_file_gcs(storage_client, bucket_name, data, destination_file_name):
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(destination_file_name)
         
-        # Convert DF → CSV string
-        csv_str = data.to_csv(index=False)
-        blob.upload_from_string(csv_str, content_type='text/csv')
+        # Convert DF → parquet and upload
+        parquet_data = data.to_parquet(index=False, engine='pyarrow')
+        blob.upload_from_string(parquet_data, content_type='application/octet-stream')
         print(f"Successfully uploaded to {destination_file_name}")
         return True
     except Exception as e:
@@ -73,8 +75,8 @@ def main():
                 scraped_posts = cleanse.clean_all(scraped_posts_df)
 
                 # Upload to GCS with properly formatted filename
-                scraped_date = datetime.datetime.now().strftime('%Y-%m-%d')
-                destination_file_name = f'raw-data/{keyword}_{scraped_date}.csv'
+                scraped_date = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+                destination_file_name = f'raw-data/{keyword}_{scraped_date}.parquet'
 
                 success = upload_file_gcs(
                     storage_client, 
